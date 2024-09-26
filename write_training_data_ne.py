@@ -29,6 +29,7 @@ def slice_data(data, sleep_scores, seq_len):
     data = data.reshape(
         (n_new_seq, seq_len, data.shape[1], data.shape[2], data.shape[3])
     )
+    print(data.shape)
     sleep_scores = sleep_scores.reshape((n_new_seq, seq_len, sleep_scores.shape[1]))
     return [data, sleep_scores]
 
@@ -44,9 +45,11 @@ def slice_data_ne(data, sleep_scores, seq_len):
         n_new_seq += 1
 
     assert (n - n_to_crop) % seq_len == 0
+    
     data = data.reshape(
-        (n_new_seq, seq_len, data.shape[1], data.shape[2])
+        (n_new_seq, seq_len, 1, data.shape[1], data.shape[2])
     )
+    print(data.shape)
     sleep_scores = sleep_scores.reshape((n_new_seq, seq_len, sleep_scores.shape[1]))
     return [data, sleep_scores]
 
