@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-Created on Mon Apr 22 11:25:38 2024
+Created on Thu Sep 26 2024
 
-@author: yzhao
+@author: yzhao and zcong
 """
 
 import math
@@ -33,18 +33,22 @@ def trim_missing_labels(filt, trim="b"):
     return filt[first:last]
 
 
-def reshape_sleep_data(mat, segment_size=512, standardize=False, has_labels=True):
+def reshape_sleep_data_ne(mat, segment_size=512, standardize=False, has_labels=True):
     eeg = mat["eeg"].flatten()
     emg = mat["emg"].flatten()
+    ne = mat["ne"].flatten()
 
     if standardize:
         eeg = stats.zscore(eeg)
         emg = stats.zscore(emg)
+        ne = stats.zscore(ne)
 
     eeg_freq = mat["eeg_frequency"].item()
+    ne_freq = mat["ne_frequency"].item()
 
     # clip the last non-full second and take the shorter duration of the two
-    end_time = math.floor(eeg.size / eeg_freq)
+    original_end_time = min(math.floor(eeg.size / eeg_freq),math.floor(ne.size/ne_freq))
+
 
     # if sampling rate is much higher than 512, downsample using poly resample
     if math.ceil(eeg_freq) != segment_size and math.floor(eeg_freq) != segment_size:
@@ -55,6 +59,17 @@ def reshape_sleep_data(mat, segment_size=512, standardize=False, has_labels=True
         eeg = signal.resample_poly(eeg, up, down)
         emg = signal.resample_poly(emg, up, down)
         eeg_freq = segment_size
+    
+    # upsample ne (subject to change)
+    down_ne, up_ne = (Fraction(ne_freq/segment_size).limit_denominator(100).as_integer_ratio())
+    #print("Up-Sampling NE which has Freq:",ne_freq)
+    ne = signal.resample_poly(ne,up_ne,down_ne)
+    ne_freq = segment_size
+
+    # recalculate end time after upsampling ne
+    resampled_end_time_eeg = math.floor(len(eeg) / eeg_freq)
+    resampled_end_time_ne = math.floor(len(ne) / ne_freq)
+    end_time = min(resampled_end_time_eeg, resampled_end_time_ne)
 
     time_sec = np.arange(end_time)
     start_indices = np.ceil(time_sec * eeg_freq).astype(int)
@@ -67,19 +82,20 @@ def reshape_sleep_data(mat, segment_size=512, standardize=False, has_labels=True
 
     eeg_reshaped = eeg[indices]
     emg_reshaped = emg[indices]
-    
+    ne_reshaped = ne[indices]
+
     if has_labels:
         sleep_scores = mat["sleep_scores"].flatten()
         sleep_scores = trim_missing_labels(
             sleep_scores, trim="b"
         )  # trim trailing zeros
-        return eeg_reshaped, emg_reshaped, sleep_scores
+        return eeg_reshaped, emg_reshaped, ne_reshaped, sleep_scores
 
-    return eeg_reshaped, emg_reshaped
+    return eeg_reshaped, emg_reshaped, ne_reshaped
 
 
 if __name__ == "__main__":
     path = "C:/Users/yzhao/python_projects/sleep_scoring/user_test_files/"
     mat_file = path + "sal_588.mat"
     mat = loadmat(mat_file)
-    eeg_reshaped, emg_reshaped, sleep_scores = reshape_sleep_data(mat)
+    eeg_reshaped, emg_reshaped, ne_reshaped, sleep_scores = reshape_sleep_data_ne(mat)

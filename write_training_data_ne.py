@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sat Jun 29 22:38:40 2024
+Created on Thu Sep 26 2024
 
-@author: yzhao
+@author: yzhao and zcong
 """
 
 import os
@@ -11,7 +11,7 @@ import numpy as np
 from scipy.io import loadmat
 from sklearn.model_selection import KFold
 
-from utils.preprocessing import reshape_sleep_data
+from utils.preprocessing_ne import reshape_sleep_data_ne
 
 
 def slice_data(data, sleep_scores, seq_len):
@@ -26,18 +26,34 @@ def slice_data(data, sleep_scores, seq_len):
         n_new_seq += 1
 
     assert (n - n_to_crop) % seq_len == 0
-    print("data.shape:",data.shape)
     data = data.reshape(
         (n_new_seq, seq_len, data.shape[1], data.shape[2], data.shape[3])
     )
-    print("data.shape after:",data.shape)
+    sleep_scores = sleep_scores.reshape((n_new_seq, seq_len, sleep_scores.shape[1]))
+    return [data, sleep_scores]
+
+def slice_data_ne(data, sleep_scores, seq_len):
+    n = len(data)
+    n_to_crop = n % seq_len
+    n_new_seq = (n - n_to_crop) // seq_len
+    if n_to_crop != 0:
+        data = np.concatenate([data[:-n_to_crop], data[-seq_len:]], axis=0)
+        sleep_scores = np.concatenate(
+            [sleep_scores[:-n_to_crop], sleep_scores[-seq_len:]], axis=0
+        )
+        n_new_seq += 1
+
+    assert (n - n_to_crop) % seq_len == 0
+    data = data.reshape(
+        (n_new_seq, seq_len, data.shape[1], data.shape[2])
+    )
     sleep_scores = sleep_scores.reshape((n_new_seq, seq_len, sleep_scores.shape[1]))
     return [data, sleep_scores]
 
 
 def prepare_data(mat_file, seq_len=64, augment=False, upsampling_scale=10):
     mat = loadmat(mat_file)
-    eeg, emg, sleep_scores = reshape_sleep_data(mat)
+    eeg, emg, ne, sleep_scores = reshape_sleep_data_ne(mat)
     sleep_scores_len = len(sleep_scores)
     eeg_len = len(eeg)
 
@@ -48,37 +64,11 @@ def prepare_data(mat_file, seq_len=64, augment=False, upsampling_scale=10):
         emg = emg[:sleep_scores_len]
 
     # standardize
-    """
-    n_secondsTemp,seq_len = emg.shape
-    window_size = 64
-    
-    if n_secondsTemp % window_size != 0:
-        excess = n_secondsTemp % window_size
-        emg = emg[:-excess]
-        eeg = eeg[:-excess]
-        sleep_scores = sleep_scores[:-excess]
-    """
-    # windowed emg z-score normalization
-    """
-    n_windows = n_secondsTemp // window_size
-    print("emg shape:",emg.shape)
-    emg_standardized = []
-    for i in range(n_windows):
-        window = emg[i * window_size : (i + 1) * window_size, :]
-        mean = np.mean(window)
-        std = np.std(window) + 1e-8  # Add epsilon to prevent division by zero
-        normalized_window = (window - mean) / std
-        emg_standardized.append(normalized_window)
-    emg_standardized = np.concatenate(emg_standardized, axis=0)  # Shape: (n_secondsTemp, 512)
-    """
     emg_standardized = (emg - np.mean(emg)) / np.std(emg)
     eeg_standardized = (eeg - np.mean(eeg)) / np.std(eeg)
 
-    print("eeg shape:",eeg_standardized.shape)
-    print("emg shape:",emg_standardized.shape)
 
     sleep_scores_reshaped = sleep_scores[:, np.newaxis]
-    print("sleep scores shape:",sleep_scores_reshaped.shape)
     eeg_reshaped = eeg_standardized[:, np.newaxis, :]
     emg_reshaped = emg_standardized[:, np.newaxis, :]
     data = np.stack((eeg_reshaped, emg_reshaped), axis=1)
@@ -108,6 +98,27 @@ def prepare_data(mat_file, seq_len=64, augment=False, upsampling_scale=10):
 
     return sliced_data, sliced_sleep_scores
 
+def prepare_data_ne(mat_file, seq_len=64, augment=False, upsampling_scale=10):
+    mat = loadmat(mat_file)
+    eeg, emg, ne, sleep_scores = reshape_sleep_data_ne(mat)
+    sleep_scores_len = len(sleep_scores)
+    ne_len = len(ne)
+
+    if sleep_scores_len >= ne_len:
+        sleep_scores = sleep_scores[:ne_len]
+    else:
+        ne = ne[:sleep_scores_len]
+
+    # standardize
+    ne_standardized = (ne-np.mean(ne))/np.std(ne)
+
+    sleep_scores_reshaped = sleep_scores[:, np.newaxis]
+    ne_reshaped = ne_standardized[:, np.newaxis, :]
+    #data = np.stack((eeg_reshaped, emg_reshaped), axis=1)
+    sliced_data_ne, sliced_sleep_scores = slice_data_ne(ne_reshaped, sleep_scores_reshaped, seq_len)
+
+    return sliced_data_ne, sliced_sleep_scores
+
 
 def write_data(
     data_path,
@@ -125,7 +136,7 @@ def write_data(
 
         mat_file = os.path.join(data_path, file)
         mat = loadmat(mat_file)
-        eeg, emg, sleep_scores = reshape_sleep_data(mat)
+        eeg, emg, ne, sleep_scores = reshape_sleep_data_ne(mat)
         if np.isnan(sleep_scores).any() or np.any(sleep_scores == -1):
             continue
 
@@ -138,8 +149,10 @@ def write_data(
 
     train_data = []
     train_labels = []
+    train_ne = []
     val_data = []
     val_labels = []
+    val_ne = []
     train_file_list = []
     val_file_list = []
     for train_ind in train_indices:
@@ -153,17 +166,26 @@ def write_data(
             augment=augment,
             upsampling_scale=upsampling_scale,
         )
+        sliced_data_ne, sliced_sleep_scores_ne = prepare_data_ne(
+            train_mat_file,
+            seq_len=seq_len,
+            augment=augment,
+            upsampling_scale=upsampling_scale,
+        )
         train_data.append(sliced_data)
         train_labels.append(sliced_sleep_scores)
+        train_ne.append(sliced_data_ne)
 
     train_data = np.concatenate(train_data, axis=0)
     train_labels = np.concatenate(train_labels, axis=0)
+    train_ne = np.concatenate(train_ne,axis=0)
 
     if not os.path.exists(save_path):
         os.makedirs(save_path)
 
     np.save(os.path.join(save_path, f"train_trace{fold}.npy"), train_data)
     np.save(os.path.join(save_path, f"train_label{fold}.npy"), train_labels)
+    np.save(os.path.join(save_path, f"train_ne{fold}.npy"), train_ne)
     print("saved train.")
 
     for val_ind in val_indices:
@@ -172,13 +194,18 @@ def write_data(
         val_file_list.append(val_file_name)
         val_mat_file = os.path.join(data_path, val_file_name)
         sliced_data, sliced_sleep_scores = prepare_data(val_mat_file)
+        sliced_data_ne, sliced_sleep_scores_ne = prepare_data_ne(val_mat_file)
         val_data.append(sliced_data)
         val_labels.append(sliced_sleep_scores)
+        val_ne.append(sliced_data_ne)
 
     val_data = np.concatenate(val_data, axis=0)
     val_labels = np.concatenate(val_labels, axis=0)
+    val_ne = np.concatenate(val_ne,axis=0)
+
     np.save(os.path.join(save_path, f"val_trace{fold}.npy"), val_data)
     np.save(os.path.join(save_path, f"val_label{fold}.npy"), val_labels)
+    np.save(os.path.join(save_path, f"val_ne{fold}.npy"), val_ne)
     return train_file_list, val_file_list
 
 

@@ -31,7 +31,7 @@ def data_generator(args, flag):
         data_path=args.data_path,
         isEval=isEval,
         fold=args.fold,
-        n_sequcnes=args.n_sequences,
+        n_sequences=args.n_sequences,
         useNorm=args.useNorm,
     )
 

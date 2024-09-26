@@ -15,6 +15,7 @@ def data_summarize(data_loader):
 
 def data_generator(args, flag):
     Data = data_dict[args.data]
+    print(Data)
     batch_size = args.batch_size
 
     if flag == "val":
