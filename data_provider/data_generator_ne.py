@@ -53,7 +53,7 @@ def visualize_data_generator(args):
         data_path=args.data_path,
         isEval=True,
         fold=args.fold,
-        n_sequcnes=args.n_sequences,
+        n_sequences=args.n_sequences,
         useNorm=args.useNorm,
     )
 
