@@ -497,7 +497,7 @@ class Exp_MoE(object):
 
         train_data, train_loader = self._get_data(flag="train")
         val_data, val_loader = self._get_data(flag="val")
-        visualize_data, visualize_loader = self._get_visualize_data()
+        #visualize_data, visualize_loader = self._get_visualize_data()
 
         train_steps = len(train_loader)
         early_stopping = EarlyStopping(patience=self.args.patience, verbose=True)
@@ -542,7 +542,7 @@ class Exp_MoE(object):
                 print("Early stopping at epoch {} ...".format(epoch))
                 break
 
-        self.run_train_visualize(setting, visualize_loader)
+        #self.run_train_visualize(setting, visualize_loader)
 
     def run_eval_visualize(self, setting):
         visualize_data, visualize_loader = self._get_visualize_data()

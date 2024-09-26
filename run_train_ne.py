@@ -15,7 +15,7 @@ import torch
 import numpy as np
 from pytorch_lightning import seed_everything
 
-from exp.exp_ne import Exp_Main
+from exp.exp_moe_ne import Exp_MoE
 
 
 # hyperparameters
@@ -133,7 +133,7 @@ if __name__ == "__main__":
     print("Args in experiment:")
     print(args)
 
-    Exp = Exp_Main
+    Exp = Exp_MoE
 
     if args.is_training:
         setting = (
