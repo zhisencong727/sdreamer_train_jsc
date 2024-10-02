@@ -48,8 +48,8 @@ def prepare_data(mat_file, seq_len=64, augment=False, upsampling_scale=10):
         emg = emg[:sleep_scores_len]
 
     # standardize
-    """
-    n_secondsTemp,seq_len = emg.shape
+    
+    n_secondsTemp,_ = emg.shape
     window_size = 64
     
     if n_secondsTemp % window_size != 0:
@@ -70,8 +70,7 @@ def prepare_data(mat_file, seq_len=64, augment=False, upsampling_scale=10):
         normalized_window = (window - mean) / std
         emg_standardized.append(normalized_window)
     emg_standardized = np.concatenate(emg_standardized, axis=0)  # Shape: (n_secondsTemp, 512)
-    """
-    emg_standardized = (emg - np.mean(emg)) / np.std(emg)
+   
     eeg_standardized = (eeg - np.mean(eeg)) / np.std(eeg)
 
     print("eeg shape:",eeg_standardized.shape)
