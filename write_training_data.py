@@ -73,7 +73,7 @@ def prepare_data(mat_file, seq_len=64, augment=False, upsampling_scale=10):
    """
    
     eeg_standardized = (eeg - np.mean(eeg)) / np.std(eeg)
-    emg_standardized = (emg - np.mean(emg)) / np.std(e,g)
+    emg_standardized = (emg - np.mean(emg)) / np.std(emg)
 
     sleep_scores_reshaped = sleep_scores[:, np.newaxis]
     print("sleep scores shape:",sleep_scores_reshaped.shape)
