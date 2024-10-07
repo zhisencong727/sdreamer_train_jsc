@@ -117,7 +117,7 @@ class Transformer(nn.Module):
         )
         self.get_mod = get_mod_emb(inner_dim, flag, dropout) if mod else nn.Identity()
 
-        self.patch_ecncoder = patch_mapper[domain] if cls else nn.Identity()
+        self.patch_encoder = patch_mapper[domain] if cls else nn.Identity()
         dpr = [x.item() for x in torch.linspace(0, path_drop, e_layers)]
         self.transformer = nn.ModuleList(
             [
@@ -141,7 +141,7 @@ class Transformer(nn.Module):
         return {"get_pos", "get_cls"}
 
     def forward(self, x):
-        x = self.patch_ecncoder(x)
+        x = self.patch_encoder(x)
         x = self.get_cls(x)
         x = self.get_pos(x)
         x = self.get_mod(x)
@@ -199,7 +199,7 @@ class SWTransformer(nn.Module):
         )
         self.get_mod = get_mod_emb(inner_dim, flag, dropout) if mod else nn.Identity()
 
-        self.patch_ecncoder = patch_mapper[domain] if cls else nn.Identity()
+        self.patch_encoder = patch_mapper[domain] if cls else nn.Identity()
         dpr = [x.item() for x in torch.linspace(0, path_drop, e_layers)]
         self.transformer = nn.ModuleList(
             [
@@ -223,7 +223,7 @@ class SWTransformer(nn.Module):
         return {"get_pos", "get_cls"}
 
     def forward(self, x):
-        x = self.patch_ecncoder(x)
+        x = self.patch_encoder(x)
         x = self.get_cls(x)
         x = self.get_pos(x)
         x = self.get_mod(x)

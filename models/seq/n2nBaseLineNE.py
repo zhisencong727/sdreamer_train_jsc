@@ -39,6 +39,9 @@ class Model(nn.Module):
 
         assert (seq_len % patch_len) == 0
         n_patches = seq_len // patch_len
+        
+        ### seq_len for ne is 512 as well?
+        n_patches_ne = seq_len // ne_patch_len
 
         # self.stft_transform = STFT(win_length=patch_len,n_fft=256,hop_length=patch_len)
         self.eeg_transformer = Transformer(
@@ -82,7 +85,7 @@ class Model(nn.Module):
         )
         self.ne_transformer = SWTransformer(
             ne_patch_len,
-            n_patches,
+            n_patches_ne,
             e_layers,
             c_in,
             inner_dim,
