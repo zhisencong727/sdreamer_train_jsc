@@ -368,7 +368,8 @@ class Exp_MoE(object):
             traces = traces.to(device)
             nes = nes.to(device)
             labels = labels.to(device)
-
+            
+            print("ne.shape is :",nes.shape)
             out_dict = model(traces, nes, labels)
             out = out_dict["out"]
             label = out_dict["label"]
