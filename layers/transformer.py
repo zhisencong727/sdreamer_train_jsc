@@ -43,6 +43,7 @@ class get_pos_emb(nn.Module):
     def __init__(self, n_patches, inner_dim, flag, dropout=0.0, cls=True):
         super().__init__()
         self.flag = flag
+        print("n_patches here is:",n_patches)
         n_patches = n_patches + 1 if cls else n_patches
         pos_mapper = {
             "seq": nn.Parameter(torch.zeros(1, 1, n_patches, inner_dim)),
