@@ -53,6 +53,8 @@ class get_pos_emb(nn.Module):
         trunc_normal_(self.pos_emb, std=0.02)
 
     def forward(self, x):
+        print(x.shape)
+        print(self.pos_emb.shape)
         x = x + self.pos_emb
         x = self.pos_drop(x)
         return x
