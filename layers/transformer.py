@@ -44,7 +44,6 @@ class get_pos_emb(nn.Module):
         super().__init__()
         self.flag = flag
         
-        
         if cls:
             print("n_patches before is:",n_patches)
             n_patches = n_patches + 1 
