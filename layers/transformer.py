@@ -46,7 +46,7 @@ class get_pos_emb(nn.Module):
         
         if cls:
             print("n_patches before is:",n_patches)
-            n_patches = n_patches
+            n_patches = n_patches+1
             print("n_patches after is:",n_patches)
         else:
             n_patches = n_patches
