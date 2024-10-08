@@ -41,7 +41,7 @@ class Model(nn.Module):
         n_patches = seq_len // patch_len
         
         ### seq_len for ne is 512 as well?
-        n_patches_ne = (seq_len // ne_patch_len)-1
+        n_patches_ne = (seq_len // ne_patch_len)+1
 
         # self.stft_transform = STFT(win_length=patch_len,n_fft=256,hop_length=patch_len)
         self.eeg_transformer = Transformer(
