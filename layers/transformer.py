@@ -234,7 +234,9 @@ class SWTransformer(nn.Module):
     def forward(self, x):
         print("x.shape here is: ",x.shape)
         x = self.patch_encoder(x)
+        print("x.shape here is: ",x.shape)
         x = self.get_cls(x)
+        print("x.shape here is: ",x.shape)
         x = self.get_pos(x)
         x = self.get_mod(x)
         attns = []
