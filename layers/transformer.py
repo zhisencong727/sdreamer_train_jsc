@@ -232,6 +232,7 @@ class SWTransformer(nn.Module):
         return {"get_pos", "get_cls"}
 
     def forward(self, x):
+        print("x.shape here is: ",x.shape)
         x = self.patch_encoder(x)
         x = self.get_cls(x)
         x = self.get_pos(x)
