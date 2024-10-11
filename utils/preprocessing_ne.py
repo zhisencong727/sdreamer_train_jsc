@@ -60,11 +60,13 @@ def reshape_sleep_data_ne(mat, segment_size=512, standardize=False, has_labels=T
         emg = signal.resample_poly(emg, up, down)
         eeg_freq = segment_size
     
+    """
     # upsample ne (subject to change)
     down_ne, up_ne = (Fraction(ne_freq/segment_size).limit_denominator(100).as_integer_ratio())
     #print("Up-Sampling NE which has Freq:",ne_freq)
     ne = signal.resample_poly(ne,up_ne,down_ne)
     ne_freq = segment_size
+    """
 
     # recalculate end time after upsampling ne
     resampled_end_time_eeg = math.floor(len(eeg) / eeg_freq)
@@ -79,10 +81,20 @@ def reshape_sleep_data_ne(mat, segment_size=512, standardize=False, has_labels=T
     segment_array = np.arange(segment_size)
     # Use broadcasting to add the range_array to each start index
     indices = start_indices + segment_array
+    
+    ne_start_indices = np.floor(time_sec * ne_freq).astype(int)
+    ne_start_indices = ne_start_indices[:, np.newaxis]
 
+    max_ne_start_index = len(ne) - segment_size
+    ne_start_indices = ne_start_indices[ne_start_indices[:, 0] <= max_ne_start_index]
+
+
+    
+    ne_indices = ne_start_indices + segment_array
+    
     eeg_reshaped = eeg[indices]
     emg_reshaped = emg[indices]
-    ne_reshaped = ne[indices]
+    ne_reshaped = ne[ne_indices]
 
     if has_labels:
         sleep_scores = mat["sleep_scores"].flatten()

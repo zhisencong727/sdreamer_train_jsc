@@ -1,0 +1,42 @@
+Author: Zhisen Cong
+
+This is the document explaining the piecewise normalization methods we explored in effort to alleviate the
+range shift issue present in the EMG.
+
+A piecewise z-score normalization was proposed over the z-score normalization on the entire dataset. The hope
+was for the model to not get confused with sleeps of different EMG ampltitude.
+
+A window size of 64 seconds is chosen for the experiment logged, it is chosen to be in sync with the 64 seconds
+window in the Seq_len the seq transformer model uses.
+
+The code for the normalization part is below:
+
+    n_secondsTemp,_ = emg.shape
+    window_size = 64
+
+    if n_secondsTemp % window_size != 0:
+        excess = n_secondsTemp % window_size
+        emg = emg[:-excess]
+        eeg = eeg[:-excess]
+        sleep_scores = sleep_scores[:-excess]
+
+    # windowed emg z-score normalization
+
+    n_windows = n_secondsTemp // window_size
+    print("emg shape:",emg.shape)
+    emg_standardized = []
+    for i in range(n_windows):
+        window = emg[i * window_size : (i + 1) * window_size, :]
+        mean = np.mean(window)
+        std = np.std(window) + 1e-8  # Add epsilon to prevent division by zero
+        normalized_window = (window - mean) / std
+        emg_standardized.append(normalized_window)
+    emg_standardized = np.concatenate(emg_standardized, axis=0)  # Shape: (n_secondsTemp, 512)
+
+The preliminary result shows slight improvement in sleep prediction for various different ranges of EMG
+ampltitudes but there exists a problem with REM over-prediction.
+
+I believe more training data is needed in order to improve performance on those specific problem datasets.
+
+The hope is to add NE as a third input of the model and potentially try this method again to test for results.
+

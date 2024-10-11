@@ -376,6 +376,7 @@ class Seq_Loader(Dataset):
     ):
         self.root_path = root_path
         self.dst_path = "{}n_seq_{}/fold_{}/".format(data_path, n_sequences, fold)
+        print("self.dst_path:",self.dst_path)
 
         if not os.path.exists(self.dst_path):
             print(
@@ -687,6 +688,7 @@ class Seq_Loader_NE(Dataset):
         useNorm=False,
     ):
         self.root_path = root_path
+        print("rootPath is:",self.root_path)
         self.dst_path = "{}n_seq_{}/fold_{}/".format(data_path, n_sequences, fold)
         i = 0
         if not os.path.exists(self.dst_path):
@@ -803,6 +805,7 @@ class Seq_Loader_NE(Dataset):
             np.save("{}val_label{}.npy".format(self.dst_path, fold), self.val_labels)
 
         else:
+            print("rootPath is:",self.root_path)
             print(">>>>>>>>>Loading Existing Fold{}<<<<<<<<<<<<<<<<<<<<<<".format(fold))
             self.train_traces = torch.from_numpy(
                 np.load(
