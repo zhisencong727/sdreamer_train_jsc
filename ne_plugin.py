@@ -148,9 +148,9 @@ def get_data(args,flag):
 
 if __name__ == "__main__":
     # write the necessary training files
-    
+    print("RUNNING")
     subprocess.run([sys.executable, "write_training_data_ne.py"])
-    
+    print("RAN")
     # load ne using data loader
     data_set,data_loader = get_data(args,"train")
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
