@@ -149,7 +149,7 @@ def get_data(args,flag):
 if __name__ == "__main__":
     # write the necessary training files
     
-    #subprocess.run([sys.executable, "write_training_data_ne.py"])
+    subprocess.run([sys.executable, "write_training_data_ne.py"])
     
     # load ne using data loader
     data_set,data_loader = get_data(args,"train")
