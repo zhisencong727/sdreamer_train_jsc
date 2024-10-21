@@ -241,6 +241,7 @@ class Exp_Main(object):
             out_dict = model(traces, nes, labels)
             out = out_dict["out"]
             label = out_dict["label"]
+            label = label.long()
 
             loss = criterion(out, label.view(-1))
             pred = np.argmax(out.detach().cpu(), axis=1)
