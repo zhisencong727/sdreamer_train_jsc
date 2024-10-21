@@ -26,7 +26,7 @@ seed = 42
 ca_layers = 1
 batch_size = 64
 n_sequences = 64
-ne_patch_len = 32
+ne_patch_len = 10
 e_layers = 2
 fold = 1
 

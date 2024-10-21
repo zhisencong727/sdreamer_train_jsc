@@ -41,7 +41,7 @@ class Model(nn.Module):
         n_patches = seq_len // patch_len
         
         ### seq_len for ne is 512 as well?
-        n_patches_ne = (seq_len // ne_patch_len)+1
+        n_patches_ne = 1
 
         # self.stft_transform = STFT(win_length=patch_len,n_fft=256,hop_length=patch_len)
         self.eeg_transformer = Transformer(
@@ -83,7 +83,7 @@ class Model(nn.Module):
             domain="time",
             output_attentions=self.output_attentions,
         )
-        self.ne_transformer = SWTransformer(
+        self.ne_transformer = Transformer(
             ne_patch_len,
             n_patches_ne,
             e_layers,
@@ -101,8 +101,6 @@ class Model(nn.Module):
             flag="seq",
             domain="time",
             output_attentions=self.output_attentions,
-            stride=ne_patch_len,
-            pad=True,
         )
 
         self.seq_transformer = Transformer(
@@ -147,7 +145,13 @@ class Model(nn.Module):
     def forward(self, x, ne, label):
         # note: if no context is given, cross-attention defaults to self-attention
         # x --> [batch, trace, channel, inner_dim]
-        eeg, emg, ne = x[:, :, 0], x[:, :, 1], ne[:, :, 0]
+        print("INSIDE MODEL FORWARD X.SHAPE IS:",x.shape)
+        print("NE.shape here is:",ne.shape)
+        eeg, emg= x[:, :, 0], x[:, :, 1]
+        print("EEG.shape after here is:",eeg.shape)
+        print("EMG.shape after here is:",emg.shape)
+
+        
 
         eeg, eeg_attn = self.eeg_transformer(eeg)
         emg, emg_attn = self.emg_transformer(emg)

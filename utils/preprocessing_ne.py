@@ -82,11 +82,12 @@ def reshape_sleep_data_ne(mat, segment_size=512, standardize=False, has_labels=T
     # Use broadcasting to add the range_array to each start index
     indices = start_indices + segment_array
     
-    segment_array_ne = 10
-    ne_start_indices = np.floor(time_sec * ne_freq).astype(int)
+    segment_size_ne = 10
+    segment_array_ne = np.arange(segment_size_ne)
+    ne_start_indices = np.ceil(time_sec * ne_freq).astype(int)
     ne_start_indices = ne_start_indices[:, np.newaxis]
     max_ne_start_index = len(ne) - segment_size
-    ne_start_indices = ne_start_indices[ne_start_indices[:, 0] <= max_ne_start_index]
+    #ne_start_indices = ne_start_indices[ne_start_indices[:, 0] <= max_ne_start_index]
     ne_indices = ne_start_indices + segment_array_ne
     
     eeg_reshaped = eeg[indices]

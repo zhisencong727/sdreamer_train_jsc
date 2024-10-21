@@ -106,6 +106,7 @@ class PatchEncoder(nn.Module):
         )
 
     def forward(self, x):
+        print("x.shape ERROR HERE is:",x.shape)
         x = self.to_patch_embedding(x)  # 128 * 32 * 128
         return x
 

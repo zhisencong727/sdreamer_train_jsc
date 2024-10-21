@@ -45,11 +45,11 @@ def slice_data_ne(data, sleep_scores, seq_len):
         n_new_seq += 1
 
     assert (n - n_to_crop) % seq_len == 0
-    
+    print("ne_before is:",data.shape)
     data = data.reshape(
-        (n_new_seq, seq_len, 1, data.shape[1], data.shape[2])
+        (n_new_seq, seq_len, data.shape[1], data.shape[2])
     )
-    print(data.shape)
+    print("ne.reshaped is",data.shape)
     sleep_scores = sleep_scores.reshape((n_new_seq, seq_len, sleep_scores.shape[1]))
     return [data, sleep_scores]
 
@@ -175,6 +175,7 @@ def write_data(
             augment=augment,
             upsampling_scale=upsampling_scale,
         )
+        print("SLICED NE.SHAPE IS:",sliced_data_ne.shape)
         train_data.append(sliced_data)
         train_labels.append(sliced_sleep_scores)
         train_ne.append(sliced_data_ne)
@@ -182,6 +183,8 @@ def write_data(
     train_data = np.concatenate(train_data, axis=0)
     train_labels = np.concatenate(train_labels, axis=0)
     train_ne = np.concatenate(train_ne,axis=0)
+    print("train_data.shape:",train_data.shape)
+    print("train_ne.shape:",train_ne.shape)
 
     if not os.path.exists(save_path):
         os.makedirs(save_path)

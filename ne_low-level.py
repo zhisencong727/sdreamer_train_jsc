@@ -52,9 +52,12 @@ ne_tensor = torch.tensor(shortenedNE, dtype=torch.float32)
 reshapedNE = ne_tensor.reshape(1,n_seconds,1,int(ne_freq))
 print(reshapedNE.shape)
 
+print("ne[:,:,0].shape is:",reshapedNE[:, :, 0].shape)
 
 ne_output,_ = ne_transformer(reshapedNE)
-print("ne_output.shape is: ",ne_output.shape) # shape is [1, n_seconds, n_patches+1, inner_dim]
+print("ne_output.shape is: ",ne_output.shape) # shape is [#batch_size??, n_seconds, n_patches+1, inner_dim]
 #print("ne_output is",ne_output)
-print(ne_output[:, :, -1].shape)
+
+
+print(ne_output[:, :, -1].shape) # [batch_size,64_sec_sequence, inner_dim]
 
