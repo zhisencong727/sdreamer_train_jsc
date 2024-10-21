@@ -107,8 +107,12 @@ class Model(nn.Module):
 
         eeg, eeg_attn = self.eeg_transformer(eeg)
         emg, emg_attn = self.emg_transformer(emg)
+        print("emg.shape:",emg.shape)
+        print("eeg.shape:",eeg.shape)
 
         cls_eeg, cls_emg = eeg[:, :, -1], emg[:, :, -1]
+        print("cls_eeg.shape",cls_eeg.shape)
+        print("cls_emg.shape",cls_emg.shape)
         # x_our --> [b, n, 2d]
 
         infer = self.moe_transformer.infer(cls_eeg, cls_emg)

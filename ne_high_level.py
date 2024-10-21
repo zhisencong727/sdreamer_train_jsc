@@ -33,7 +33,7 @@ config = dict(
     features="ALL",
     n_sequences=n_sequences,
     useNorm=True,
-    num_workers=10,
+    num_workers=4,
     seq_len=512,
     patch_len=patch_len,
     ne_patch_len=ne_patch_len,
@@ -149,7 +149,7 @@ def get_data(args,flag):
 if __name__ == "__main__":
     # write the necessary training files
     print("RUNNING")
-    subprocess.run([sys.executable, "write_training_data_ne.py"])
+    #subprocess.run([sys.executable, "write_training_data_ne.py"])
     print("RAN")
     # load ne using data loader
     data_set,data_loader = get_data(args,"train")
@@ -157,7 +157,7 @@ if __name__ == "__main__":
 
     for i, (traces, nes, labels) in enumerate(data_loader):
         nes = nes.to(device)
-
+        print("nes.shape",nes.shape)
     # plug it in to the ne transformer
         ne_out, ne_attn = ne_transformer(nes)
         print(i)

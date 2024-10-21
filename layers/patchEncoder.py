@@ -119,9 +119,11 @@ class SWPatchEncoder(nn.Module):
         super().__init__()
 
         self.patch_dim = patch_len * in_channel
+        print("self.patch_dim here is:",self.patch_dim)
         self.stride = stride
 
-        self.padd_layer = nn.ReplicationPad1d((0, stride)) if pad else nn.Identity()
+        # pad 0 for stride length
+        self.padd_layer = nn.ConstantPad1d((0, stride),0) if pad else nn.Identity()
 
         self.patch_spliter = nn.Sequential(
             Rearrange("b ... c t -> b ... (c t)"),
@@ -135,7 +137,12 @@ class SWPatchEncoder(nn.Module):
         )
 
     def forward(self, x):
+        print("x.shape at the beginning of patchEncoder is: ",x.shape)
         x = self.patch_spliter(x)
+        print("x.shape after patch_splitter is: ",x.shape)
+        #print(x)
         x = x.unfold(dimension=-1, size=self.patch_dim, step=self.stride)
-        x = self.to_patch_embedding(x)  # 128 * 32 * 128
+        print("x.shape after unfold is: ",x.shape)
+        x = self.to_patch_embedding(x)  
+        print("x.shape after to_patch_embedding is: ",x.shape)
         return x

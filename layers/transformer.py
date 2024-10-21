@@ -19,19 +19,29 @@ class get_cls_token(nn.Module):
         self.flag = flag
         self.front_append = front_append
         cls_mapper = {
+            # we are using "seq"
             "seq": nn.Parameter(torch.zeros(1, 1, 1, inner_dim)),
-            "epoch": nn.Parameter(torch.zeros(1, 1, inner_dim)),
+            "epoch": nn.Parameter(torch.zeros(1, 1, 1, 1, inner_dim)),
         }
         self.cls_token = cls_mapper[flag]
         trunc_normal_(self.cls_token, std=0.02)
 
     def forward(self, x):
+        print(self.flag)
+        print("x.shape inside get_cls is:",x.shape)
+
         if self.flag == "epoch":
             cls_tokens = repeat(self.cls_token, "() n d -> b n d", b=x.shape[0])
         else:
+            print("self.cls_token.shape: ", self.cls_token.shape)
             cls_tokens = repeat(
                 self.cls_token, "() () n d -> b e n d", b=x.shape[0], e=x.shape[1]
             )
+        
+        # expand self.cls_token to match with x.shape for cat
+        #b, e, t, n, d = x.shape
+        #cls_tokens = self.cls_token.expand(b, e, t, 1, d)
+        
         if self.front_append:
             x = torch.cat([cls_tokens, x], dim=-2)
         else:
@@ -58,8 +68,8 @@ class get_pos_emb(nn.Module):
         trunc_normal_(self.pos_emb, std=0.02)
 
     def forward(self, x):
-        print(x.shape)
-        print(self.pos_emb.shape)
+        print("x.shape in get_pos_emb is: ",x.shape)
+        print("pos_emb.shape is:",self.pos_emb.shape)
         x = x + self.pos_emb
         x = self.pos_drop(x)
         return x
@@ -180,7 +190,7 @@ class SWTransformer(nn.Module):
         mult=4,
         mix_type=0,
         cls=True,
-        flag="epoch",
+        flag="seq",
         domain="time",
         output_attentions=False,
         stride=8,
@@ -193,10 +203,9 @@ class SWTransformer(nn.Module):
             pos = True
         if mix_type == 2:
             mod = True
-
         patch_mapper = {
             "time": SWPatchEncoder(patch_len, stride, c_in, inner_dim, pad=pad),
-            "freq": nn.Linear(129, inner_dim),
+            "freq": nn.Linear(10, inner_dim),
         }
         self.get_cls = get_cls_token(inner_dim, flag=flag) if cls else nn.Identity()
         self.get_pos = (
@@ -230,13 +239,15 @@ class SWTransformer(nn.Module):
         return {"get_pos", "get_cls"}
 
     def forward(self, x):
-        print("x.shape here is: ",x.shape)
+        print("x.shape at the start of forward is: ",x.shape)
         x = self.patch_encoder(x)
-        print("x.shape here is: ",x.shape)
+        print("x.shape after patch_encoder is: ",x.shape)
         x = self.get_cls(x)
-        print("x.shape here is: ",x.shape)
+        print("x.shape after get_cls is: ",x.shape)
         x = self.get_pos(x)
+        print("x.shape after get_pos is: ",x.shape)
         x = self.get_mod(x)
+        print("x.shape after get_mod is: ",x.shape)
         attns = []
 
         for block in self.transformer:
