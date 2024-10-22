@@ -27,13 +27,13 @@ class get_cls_token(nn.Module):
         trunc_normal_(self.cls_token, std=0.02)
 
     def forward(self, x):
-        print(self.flag)
-        print("x.shape inside get_cls is:",x.shape)
+        #print(self.flag)
+        #print("x.shape inside get_cls is:",x.shape)
 
         if self.flag == "epoch":
             cls_tokens = repeat(self.cls_token, "() n d -> b n d", b=x.shape[0])
         else:
-            print("self.cls_token.shape: ", self.cls_token.shape)
+            #print("self.cls_token.shape: ", self.cls_token.shape)
             cls_tokens = repeat(
                 self.cls_token, "() () n d -> b e n d", b=x.shape[0], e=x.shape[1]
             )
@@ -68,8 +68,8 @@ class get_pos_emb(nn.Module):
         trunc_normal_(self.pos_emb, std=0.02)
 
     def forward(self, x):
-        print("x.shape in get_pos_emb is: ",x.shape)
-        print("pos_emb.shape is:",self.pos_emb.shape)
+        #print("x.shape in get_pos_emb is: ",x.shape)
+        #print("pos_emb.shape is:",self.pos_emb.shape)
         x = x + self.pos_emb
         x = self.pos_drop(x)
         return x
@@ -158,7 +158,7 @@ class Transformer(nn.Module):
         return {"get_pos", "get_cls"}
 
     def forward(self, x):
-        print("x.shape at the ERROR START OF TRANSFORMER FORWARD IS:",x.shape)
+        #print("x.shape at the ERROR START OF TRANSFORMER FORWARD IS:",x.shape)
         x = self.patch_encoder(x)
         x = self.get_cls(x)
         x = self.get_pos(x)

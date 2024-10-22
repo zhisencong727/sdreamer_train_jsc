@@ -841,14 +841,14 @@ class Seq_Loader_NE(Dataset):
             if not isEval
             else (self.val_traces, self.val_ne, self.val_labels)
         )
-        print("INSIDE DATALOADER BEFORE SELF.TRACES.SHAPE:",self.traces.shape)
-        print("INSIDE DATALOADER BEFORE SELF.NE.SHAPE:",self.ne.shape)
+        #print("INSIDE DATALOADER BEFORE SELF.TRACES.SHAPE:",self.traces.shape)
+        #print("INSIDE DATALOADER BEFORE SELF.NE.SHAPE:",self.ne.shape)
         self.traces = (
             self.traces[:, :, :, :1] if not useNorm else self.traces[:, :, :, -1:]
         )
         self.ne = self.ne[:, :, :1] if not useNorm else self.ne[:, :, -1:]
-        print("INSIDE DATALOADER SELF.TRACES.SHAPE:",self.traces.shape)
-        print("INSIDE DATALOADER SELF.NE.SHAPE:",self.ne.shape)
+        #print("INSIDE DATALOADER SELF.TRACES.SHAPE:",self.traces.shape)
+        #print("INSIDE DATALOADER SELF.NE.SHAPE:",self.ne.shape)
 
     def __len__(self):
         return self.labels.size(0)

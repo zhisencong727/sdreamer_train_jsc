@@ -106,7 +106,7 @@ class PatchEncoder(nn.Module):
         )
 
     def forward(self, x):
-        print("x.shape ERROR HERE is:",x.shape)
+        #print("x.shape ERROR HERE is:",x.shape)
         x = self.to_patch_embedding(x)  # 128 * 32 * 128
         return x
 
@@ -120,7 +120,7 @@ class SWPatchEncoder(nn.Module):
         super().__init__()
 
         self.patch_dim = patch_len * in_channel
-        print("self.patch_dim here is:",self.patch_dim)
+        #print("self.patch_dim here is:",self.patch_dim)
         self.stride = stride
 
         # pad 0 for stride length
