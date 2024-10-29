@@ -63,6 +63,7 @@ import time
 import warnings
 import matplotlib.pyplot as plt
 import numpy as np
+import random
 
 warnings.filterwarnings("ignore")
 
@@ -236,6 +237,9 @@ class Exp_Main(object):
         all_gt, all_pred = [], []
         for i, (traces, nes, labels) in enumerate(train_loader):
             traces = traces.to(device)
+            ne_zero_prob = random.random()
+            if ne_zero_prob < 0.25:
+                nes = torch.zeros(64,64,1,10)
             nes = nes.to(device)
             labels = labels.to(device)
 
