@@ -238,7 +238,7 @@ class Exp_Main(object):
         for i, (traces, nes, labels) in enumerate(train_loader):
             traces = traces.to(device)
             ne_zero_prob = random.random()
-            if ne_zero_prob < 0.25:
+            if ne_zero_prob < 0.5:
                 nes = torch.zeros(64,64,1,10)
             nes = nes.to(device)
             labels = labels.to(device)

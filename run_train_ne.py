@@ -70,7 +70,7 @@ config = dict(
     norm_type=norm_type,
     output_attentions=False,
     useRaw=False,
-    epochs=100,
+    epochs=200,
     batch_size=batch_size,
     patience=30,
     optimizer="adamw",
@@ -106,7 +106,7 @@ if __name__ == "__main__":
     # specify the paths
     data_path = "processedTrainingData/"
     checkpoints = "trainedModel"  # model save directory name
-    des_name = "jsc_ne_sample"  # suffix in the model name
+    des_name = "jsc_ne_mixed_50"  # suffix in the model name
 
     parser = argparse.ArgumentParser(description="Transformer family for sleep scoring")
     args = parser.parse_args()
