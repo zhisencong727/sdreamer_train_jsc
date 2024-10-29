@@ -239,6 +239,7 @@ class Exp_Main(object):
             traces = traces.to(device)
             ne_zero_prob = random.random()
             if ne_zero_prob < 0.25:
+                print("TRIGGERD")
                 nes = torch.zeros(64,64,1,10)
             nes = nes.to(device)
             labels = labels.to(device)
