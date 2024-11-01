@@ -237,11 +237,17 @@ class Exp_Main(object):
         all_gt, all_pred = [], []
         for i, (traces, nes, labels) in enumerate(train_loader):
             traces = traces.to(device)
-            ne_zero_prob = random.random()
-            if ne_zero_prob < 0.5:
-                nes = torch.zeros(64,64,1,10)
             nes = nes.to(device)
             labels = labels.to(device)
+            #print(nes)
+            batch_size = nes.size(0)
+            indices = torch.randperm(batch_size)
+            zero_amount = int(batch_size * 0.5)
+            zero_indices = indices[:zero_amount]
+            print(zero_indices)
+            nes[zero_indices] = 0
+            print(nes[indices[42]])
+
 
             out_dict = model(traces, nes, labels)
             out = out_dict["out"]
