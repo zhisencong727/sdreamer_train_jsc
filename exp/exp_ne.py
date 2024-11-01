@@ -244,9 +244,9 @@ class Exp_Main(object):
             indices = torch.randperm(batch_size)
             zero_amount = int(batch_size * 0.5)
             zero_indices = indices[:zero_amount]
-            print(zero_indices)
+            #print(zero_indices)
             nes[zero_indices] = 0
-            print(nes[indices[42]])
+            #print(nes[indices[42]])
 
 
             out_dict = model(traces, nes, labels)
