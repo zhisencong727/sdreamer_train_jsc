@@ -242,7 +242,7 @@ class Exp_Main(object):
             #print(nes)
             batch_size = nes.size(0)
             indices = torch.randperm(batch_size)
-            zero_amount = int(batch_size * 0.5)
+            zero_amount = int(batch_size * 0.25)
             zero_indices = indices[:zero_amount]
             #print(zero_indices)
             nes[zero_indices] = 0
