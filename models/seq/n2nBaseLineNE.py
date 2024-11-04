@@ -127,6 +127,10 @@ class Model(nn.Module):
             nn.LayerNorm(inner_dim * n_traces),
             nn.Linear(inner_dim * n_traces, inner_dim),
         )
+        self.proj_no_ne = self._head = nn.Sequential(
+            nn.LayerNorm(inner_dim * (n_traces-1)),
+            nn.Linear(inner_dim * (n_traces-1), inner_dim),
+        )
         self.mlp_head = nn.Sequential(
             nn.LayerNorm(inner_dim), nn.Linear(inner_dim, c_out)
         )
@@ -152,28 +156,43 @@ class Model(nn.Module):
         #print("EMG.shape after here is:",emg.shape)
 
         if torch.any(ne!=0):
-            pass
+            eeg, eeg_attn = self.eeg_transformer(eeg)
+            emg, emg_attn = self.emg_transformer(emg)
+            ne, ne_attn = self.ne_transformer(ne)
+
+            cls_eeg, cls_emg, cls_ne = eeg[:, :, -1], emg[:, :, -1], ne[:, :, -1]
+
+            # x_our --> [b, n, 2d]
+            emb = torch.cat([cls_eeg, cls_emg, cls_ne], dim=-1)
+            emb = self.proj(emb)
+            emb, seq_attn = self.seq_transformer(emb)
+
+            out = self.mlp_head(emb)
+            out = rearrange(out, "b e d -> (b e) d")
+            emb = rearrange(emb, "b e d -> (b e) d")
+            label = rearrange(label, "b e d -> (b e) d")
+
+            out_dict = {"out": out, "seq_attn": seq_attn, "cls_feats": emb, "label": label}
+            return out_dict
         else:
-            print("TRIGGERED HERE")
+            print("NE=0")
+            eeg, eeg_attn = self.eeg_transformer(eeg)
+            emg, emg_attn = self.emg_transformer(emg)
+            
+            cls_eeg, cls_emg = eeg[:, :, -1], emg[:, :, -1]
 
-        eeg, eeg_attn = self.eeg_transformer(eeg)
-        emg, emg_attn = self.emg_transformer(emg)
-        ne, ne_attn = self.ne_transformer(ne)
+            emb = torch.cat([cls_eeg, cls_emg], dim=-1)
+            emb = self.proj_no_ne(emb)
+            emb, seq_attn = self.seq_transformer(emb)
 
-        cls_eeg, cls_emg, cls_ne = eeg[:, :, -1], emg[:, :, -1], ne[:, :, -1]
+            out = self.mlp_head(emb)
+            out = rearrange(out, "b e d -> (b e) d")
+            emb = rearrange(emb, "b e d -> (b e) d")
+            label = rearrange(label, "b e d -> (b e) d")
 
-        # x_our --> [b, n, 2d]
-        emb = torch.cat([cls_eeg, cls_emg, cls_ne], dim=-1)
-        emb = self.proj(emb)
-        emb, seq_attn = self.seq_transformer(emb)
-
-        out = self.mlp_head(emb)
-        out = rearrange(out, "b e d -> (b e) d")
-        emb = rearrange(emb, "b e d -> (b e) d")
-        label = rearrange(label, "b e d -> (b e) d")
-
-        out_dict = {"out": out, "seq_attn": seq_attn, "cls_feats": emb, "label": label}
-        return out_dict
+            out_dict = {"out": out, "seq_attn": seq_attn, "cls_feats": emb, "label": label}
+            return out_dict
+        
 
 
 class Mono_Model(nn.Module):

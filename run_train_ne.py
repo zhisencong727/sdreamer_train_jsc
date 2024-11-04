@@ -21,7 +21,7 @@ from exp.exp_ne import Exp_Main
 # hyperparameters
 activation = "glu"
 norm_type = "layernorm"
-patch_len = 8
+patch_len = 16
 seed = 42
 ca_layers = 1
 batch_size = 64
@@ -106,7 +106,7 @@ if __name__ == "__main__":
     # specify the paths
     data_path = "processedTrainingData/"
     checkpoints = "trainedModel"  # model save directory name
-    des_name = "jsc_ne_mixed_50_patch_len=8"  # suffix in the model name
+    des_name = "jsc_ne_mixed_50_masked"  # suffix in the model name
 
     parser = argparse.ArgumentParser(description="Transformer family for sleep scoring")
     args = parser.parse_args()
