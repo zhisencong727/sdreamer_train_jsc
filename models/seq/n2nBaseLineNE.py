@@ -151,7 +151,10 @@ class Model(nn.Module):
         #print("EEG.shape after here is:",eeg.shape)
         #print("EMG.shape after here is:",emg.shape)
 
-        
+        if torch.any(ne!=0):
+            pass
+        else:
+            print("TRIGGERED HERE")
 
         eeg, eeg_attn = self.eeg_transformer(eeg)
         emg, emg_attn = self.emg_transformer(emg)
