@@ -183,6 +183,14 @@ class Exp_Main(object):
                 nes = nes.to(self.device)
                 labels = labels.to(self.device)
 
+                batch_size = nes.size(0)
+                indices = torch.randperm(batch_size)
+                zero_amount = int(batch_size * 0.5)
+                zero_indices = indices[:zero_amount]
+                #print(zero_indices)
+                nes[zero_indices] = 0
+                #print(nes[indices[42]])
+
                 out_dict = model(traces, nes, labels)
                 out = out_dict["out"]
                 label = out_dict["label"]

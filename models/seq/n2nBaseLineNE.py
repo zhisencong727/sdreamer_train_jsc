@@ -147,13 +147,7 @@ class Model(nn.Module):
             nn.init.constant_(m.weight, 1.0)
 
     def forward(self, x, ne, label):
-        # note: if no context is given, cross-attention defaults to self-attention
-        # x --> [batch, trace, channel, inner_dim]
-        #print("INSIDE MODEL FORWARD X.SHAPE IS:",x.shape)
-        #print("NE.shape here is:",ne.shape)
         eeg, emg= x[:, :, 0], x[:, :, 1]
-        #print("EEG.shape after here is:",eeg.shape)
-        #print("EMG.shape after here is:",emg.shape)
 
         if torch.any(ne!=0):
             eeg, eeg_attn = self.eeg_transformer(eeg)
