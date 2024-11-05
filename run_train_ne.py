@@ -106,7 +106,7 @@ if __name__ == "__main__":
     # specify the paths
     data_path = "processedTrainingData/"
     checkpoints = "trainedModel"  # model save directory name
-    des_name = "jsc_ne_mixed_50_masked"  # suffix in the model name
+    des_name = "jsc_ne_mixed_50_masked_Nov5"  # suffix in the model name
 
     parser = argparse.ArgumentParser(description="Transformer family for sleep scoring")
     args = parser.parse_args()
