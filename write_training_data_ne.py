@@ -85,13 +85,18 @@ def prepare_data(mat_file, seq_len=64, augment=False, upsampling_scale=10):
         for transition_ind in REM_transition_indices:
             REM_sampling_range = np.arange(
                 max(0, transition_ind - seq_len + 2),
-                min(transition_ind + 1, sleep_scores_len - seq_len),
+                min(transition_ind + 1, len(sleep_scores) - seq_len-10),
             )
+            if REM_sampling_range.size == 0:
+                print(f"Skipping transition_ind {transition_ind} due to empty sampling range.")
+                continue
             REM_sampling_start_inds = np.random.choice(
                 REM_sampling_range, size=upsampling_scale, replace=False
             )
+            
             REM_sampling_start_inds = np.expand_dims(REM_sampling_start_inds, axis=-1)
             REM_sampling_range = REM_sampling_start_inds + np.arange(seq_len)
+
             augmented_sample = data[REM_sampling_range]
             augmented_sleep_scores = sleep_scores_reshaped[REM_sampling_range]
             sliced_data = np.concatenate([sliced_data, augmented_sample], axis=0)
@@ -128,10 +133,13 @@ def prepare_data_ne(mat_file, seq_len=64, augment=False, upsampling_scale=10):
         for transition_ind in REM_transition_indices:
             REM_sampling_range = np.arange(
                 max(0, transition_ind - seq_len + 2),
-                min(transition_ind + 1, sleep_scores_len - seq_len),
+                min(transition_ind + 1, len(sleep_scores) - seq_len),
             )
+            if REM_sampling_range.size == 0:
+                print(f"Skipping transition_ind {transition_ind} due to empty sampling range.")
+                continue
             REM_sampling_start_inds = np.random.choice(
-                REM_sampling_range, size=upsampling_scale, replace=False
+                REM_sampling_range, size=upsampling_scale, replace=upsampling_scale > REM_sampling_range.size
             )
             REM_sampling_start_inds = np.expand_dims(REM_sampling_start_inds, axis=-1)
             REM_sampling_range = REM_sampling_start_inds + np.arange(seq_len)
