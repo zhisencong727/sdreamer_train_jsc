@@ -120,6 +120,28 @@ def prepare_data_ne(mat_file, seq_len=64, augment=False, upsampling_scale=10):
     #data = np.stack((eeg_reshaped, emg_reshaped), axis=1)
     sliced_data_ne, sliced_sleep_scores = slice_data_ne(ne_reshaped, sleep_scores_reshaped, seq_len)
 
+    if augment:
+        transition_indices = np.flatnonzero(np.diff(sleep_scores))
+        REM_transition_indices = transition_indices[
+            sleep_scores[transition_indices] == 2
+        ]
+        for transition_ind in REM_transition_indices:
+            REM_sampling_range = np.arange(
+                max(0, transition_ind - seq_len + 2),
+                min(transition_ind + 1, sleep_scores_len - seq_len),
+            )
+            REM_sampling_start_inds = np.random.choice(
+                REM_sampling_range, size=upsampling_scale, replace=False
+            )
+            REM_sampling_start_inds = np.expand_dims(REM_sampling_start_inds, axis=-1)
+            REM_sampling_range = REM_sampling_start_inds + np.arange(seq_len)
+            augmented_sample = ne_reshaped[REM_sampling_range]
+            augmented_sleep_scores = sleep_scores_reshaped[REM_sampling_range]
+            sliced_data_ne = np.concatenate([sliced_data_ne, augmented_sample], axis=0)
+            sliced_sleep_scores = np.concatenate(
+                [sliced_sleep_scores, augmented_sleep_scores], axis=0
+            )
+
     return sliced_data_ne, sliced_sleep_scores
 
 
@@ -129,7 +151,7 @@ def write_data(
     on_hold_list=[],
     fold=1,
     seq_len=64,
-    augment=False,
+    augment=True,
     upsampling_scale=10,
 ):
     mat_list = []
