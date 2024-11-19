@@ -1,7 +1,7 @@
 from scipy.io import loadmat,savemat
 import numpy as np
 
-filename = "/Users/jsc727/Downloads/klaudia_try_app.mat"
+filename = "/Users/jsc727/Downloads/830.mat"
 matfile = loadmat(filename)
 emg = matfile['emg'].flatten()
 emg_original = emg
@@ -22,7 +22,7 @@ print("EMG.shape",emg.shape)
 print("EMG_MOVING_AVG.size",emg_moving_avg.shape)
 
 
-emg_minus_moving_avg = emg_original-emg_moving_avg
+emg_minus_moving_avg = emg_original/emg_moving_avg
 
 matfile['emg_moving_avg'] = emg_moving_avg
 matfile['emg_minus_moving_avg'] = emg_minus_moving_avg
