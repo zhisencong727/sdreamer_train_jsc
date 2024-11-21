@@ -54,7 +54,7 @@ def slice_data_ne(data, sleep_scores, seq_len):
     return [data, sleep_scores]
 
 
-def prepare_data(mat_file, seq_len=256, augment=False, upsampling_scale=10):
+def prepare_data(mat_file, seq_len=512, augment=False, upsampling_scale=10):
     mat = loadmat(mat_file)
     eeg, emg, ne, sleep_scores = reshape_sleep_data_ne(mat)
     sleep_scores_len = len(sleep_scores)
@@ -106,7 +106,7 @@ def prepare_data(mat_file, seq_len=256, augment=False, upsampling_scale=10):
 
     return sliced_data, sliced_sleep_scores
 
-def prepare_data_ne(mat_file, seq_len=256, augment=False, upsampling_scale=10):
+def prepare_data_ne(mat_file, seq_len=512, augment=False, upsampling_scale=10):
     mat = loadmat(mat_file)
     eeg, emg, ne, sleep_scores = reshape_sleep_data_ne(mat)
     sleep_scores_len = len(sleep_scores)
@@ -158,7 +158,7 @@ def write_data(
     save_path,
     on_hold_list=[],
     fold=1,
-    seq_len=256,
+    seq_len=512,
     augment=False,
     upsampling_scale=10,
 ):
@@ -247,7 +247,7 @@ def write_data(
 
 # %%
 if __name__ == "__main__":
-    seq_len = 256  # don't change
+    seq_len = 512  # don't change
     fold = 1  # don't change
     data_path = "groundtruth_data"  # path to the preprocessed data, ie., the .mat files
     save_path = f"processedTrainingData/n_seq_{seq_len}/fold_{fold}"  # where you want to save the train and val data
