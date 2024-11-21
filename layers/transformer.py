@@ -68,8 +68,8 @@ class get_pos_emb(nn.Module):
         trunc_normal_(self.pos_emb, std=0.02)
 
     def forward(self, x):
-        print("x.shape in get_pos_emb is: ",x.shape)
-        print("pos_emb.shape is:",self.pos_emb.shape)
+        #print("x.shape in get_pos_emb is: ",x.shape)
+        #print("pos_emb.shape is:",self.pos_emb.shape)
         x = x + self.pos_emb
         x = self.pos_drop(x)
         return x
