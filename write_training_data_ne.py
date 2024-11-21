@@ -247,7 +247,7 @@ def write_data(
 
 # %%
 if __name__ == "__main__":
-    seq_len = 256  # don't change
+    seq_len = 512  # don't change
     fold = 1  # don't change
     data_path = "groundtruth_data"  # path to the preprocessed data, ie., the .mat files
     save_path = f"processedTrainingData/n_seq_{seq_len}/fold_{fold}"  # where you want to save the train and val data
