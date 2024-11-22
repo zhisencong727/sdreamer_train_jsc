@@ -25,7 +25,7 @@ patch_len = 16
 seed = 42
 ca_layers = 1
 batch_size = 64
-n_sequences = 128
+n_sequences = 512
 ne_patch_len = 10
 e_layers = 2
 fold = 1
@@ -106,7 +106,7 @@ if __name__ == "__main__":
     # specify the paths
     data_path = "processedTrainingData/"
     checkpoints = "trainedModel"  # model save directory name
-    des_name = "jsc_ne_128"  # suffix in the model name
+    des_name = "jsc_ne_512"  # suffix in the model name
 
     parser = argparse.ArgumentParser(description="Transformer family for sleep scoring")
     args = parser.parse_args()

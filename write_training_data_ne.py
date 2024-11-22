@@ -149,7 +149,7 @@ def prepare_data_ne(mat_file, seq_len, augment=False, upsampling_scale=10):
             sliced_sleep_scores = np.concatenate(
                 [sliced_sleep_scores, augmented_sleep_scores], axis=0
             )
-
+    print()
     return sliced_data_ne, sliced_sleep_scores
 
 
@@ -158,7 +158,7 @@ def write_data(
     save_path,
     on_hold_list=[],
     fold=1,
-    seq_len=128,
+    seq_len=512,
     augment=False,
     upsampling_scale=10,
 ):
