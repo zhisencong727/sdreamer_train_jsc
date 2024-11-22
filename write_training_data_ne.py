@@ -54,7 +54,7 @@ def slice_data_ne(data, sleep_scores, seq_len):
     return [data, sleep_scores]
 
 
-def prepare_data(mat_file, seq_len, augment=False, upsampling_scale=10):
+def prepare_data(mat_file, seq_len=512, augment=False, upsampling_scale=10):
     mat = loadmat(mat_file)
     eeg, emg, ne, sleep_scores = reshape_sleep_data_ne(mat)
     sleep_scores_len = len(sleep_scores)
@@ -106,7 +106,7 @@ def prepare_data(mat_file, seq_len, augment=False, upsampling_scale=10):
 
     return sliced_data, sliced_sleep_scores
 
-def prepare_data_ne(mat_file, seq_len, augment=False, upsampling_scale=10):
+def prepare_data_ne(mat_file, seq_len=512, augment=False, upsampling_scale=10):
     mat = loadmat(mat_file)
     eeg, emg, ne, sleep_scores = reshape_sleep_data_ne(mat)
     sleep_scores_len = len(sleep_scores)
