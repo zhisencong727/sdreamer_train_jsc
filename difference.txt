@@ -1,0 +1,16 @@
+I added write_training_data_ne which extends from your write_training_data file to prepare, augment (optional), and write training data that includes NE
+
+I added run_train_ne which also extends from your run_train file to train a model with NE inputs; This script uses BaselineNE as the model and ne_patch_len of 10
+
+    This script calls exp_ne which is the script to run the training loop. Within exp_ne is where we implemented the mixed training part where we made half of the training data to not
+    include NE and the other half do.
+
+I added preprocessing_ne in the utils folder
+
+Changes made inside data_provider to data_loader:
+    Correct the spelling for n_sequnces to n_sequences, two places I believe, the terminal will prompt you where when you run the run_train_ne, very easy to find
+Change made inside exp_ne:
+    Comment out the calls to visualize_data on line 307 and line 348 
+
+
+I do not believe I made any changes to the model or any of the transformers code
